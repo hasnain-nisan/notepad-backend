@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-// import { Note } from '../../notes/entities/note.entity';
+import { Note } from '../../notes/entities/note.entity';
 
 @Entity('users')
 export class User {
@@ -33,8 +33,8 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  //   @OneToMany(() => Note, (note) => note.user)
-  //   notes: Note[];
+  @OneToMany(() => Note, (note) => note.user)
+  notes: Note[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
