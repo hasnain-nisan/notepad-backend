@@ -9,7 +9,6 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-// import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { NoteService } from '../services/note.service';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { UpdateNoteDto } from '../dto/update-note.dto';
