@@ -1,98 +1,261 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Notepad Backend: SOLID Architecture and Repository Pattern
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## SOLID Principles Implementation
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 1. Single Responsibility Principle (SRP)
 
-## Description
+**Where**: Each class has one clear responsibility
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Examples**:
+- `UserService`: Handles user business logic only  
+- `UserRepository`: Handles user data access only  
+- `AuthService`: Handles authentication logic only  
+- `NotesController`: Handles HTTP requests/responses for notes
 
-## Project setup
+**Benefits**:
+- Easy to maintain, test, and understand
+- Changes in one area don't affect others
 
-```bash
-$ npm install
+---
+
+### 2. Open/Closed Principle (OCP)
+
+**Where**: Interfaces allow extension without modification
+
+**Examples**:
+- `IRepository<T>` interface extended for specific entities  
+- `IUserRepository` extends `IRepository<User>` with user-specific methods  
+- `IAuthService` allows different authentication implementations
+
+**Benefits**:
+- New features can be added without modifying existing code
+
+---
+
+### 3. Liskov Substitution Principle (LSP)
+
+**Where**: Implementations can be substituted for their interfaces
+
+**Examples**:
+- `UserRepository` implements `IUserRepository` and can be replaced by another implementation  
+- `AuthService` implements `IAuthService` and is substitutable
+
+**Benefits**:
+- Easy to swap implementations (e.g., switch from SQLite to PostgreSQL)
+
+---
+
+### 4. Interface Segregation Principle (ISP)
+
+**Where**: Use specific interfaces instead of large monolithic ones
+
+**Examples**:
+- `IUserRepository` has only user-related methods  
+- `INoteRepository` has only note-related methods  
+- `IAuthService` focuses only on authentication concerns
+
+**Benefits**:
+- Classes depend only on the methods they use
+
+---
+
+### 5. Dependency Inversion Principle (DIP)
+
+**Where**: High-level modules depend on abstractions, not concretions
+
+**Examples**:
+- `UserService` depends on `UserRepository` (injected via constructor)  
+- `AuthService` depends on `UserService` and `JwtService` (both injected)  
+- `NotesController` depends on `NoteService` (injected)
+
+**Benefits**:
+- Loose coupling, easier testing with mocks, better flexibility
+
+---
+
+## Repository Pattern Implementation
+
+### Where it's used:
+- `IRepository<T>`: Generic contract for all repositories
+- `IUserRepository`, `INoteRepository`: Extend base interface
+- `UserRepository`, `NoteRepository`: Implement the interfaces
+
+### How it helps:
+- **Data Access Abstraction**: Business logic doesn’t depend on TypeORM specifics  
+- **Testability**: Easy to mock repositories for testing  
+- **Flexibility**: Can switch data sources without changing business logic  
+- **Consistency**: All repositories follow the same contract
+
+---
+
+## Benefits of this Architecture
+
+- **Maintainability**: Clear separation of concerns  
+- **Testability**: Independent testing with mocks  
+- **Scalability**: Add new features easily  
+- **Flexibility**: Swap implementations easily  
+- **Code Reusability**: Generic interfaces reduce duplication
+
+---
+
+## NestJS Best Practices Implemented
+
+- **Dependency Injection**: All dependencies injected through constructors  
+- **Module Organization**: Each feature in its own module  
+- **DTOs with Validation**: Using `class-validator`  
+- **Guards and Strategies**: JWT auth with Passport  
+- **Exception Handling**: Proper HTTP exceptions  
+- **Entity Relationships**: Between `User` and `Note` entities via TypeORM
+
+---
+
+## Usage Instructions
+
+```ts
+npm install
+npm run start:dev
+API available at: http://localhost:3000 
 ```
 
-## Compile and run the project
+## API Endpoints
 
-```bash
-# development
-$ npm run start
+* `POST /auth/register` – Register a new user
+* `POST /auth/login` – Login user
+* `GET /notes` – Get user's notes (requires auth)
+* `POST /notes` – Create a new note (requires auth)
+* `GET /notes/:id` – Get a specific note (requires auth)
+* `PATCH /notes/:id` – Update a note (requires auth)
+* `DELETE /notes/:id` – Delete a note (requires auth)
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
+## Key Architecture Decisions
+
+### 1. Layered Architecture
+
+**Flow:** Controllers → Services → Repositories → Database
+
+* **Controllers:** Handle HTTP requests and routing
+* **Services:** Contain business logic
+* **Repositories:** Abstract data access
+* **Entities:** Domain models with relationships
+
+**Benefits:** Easier testing, maintainability, and clear structure
+
+### 2. Interface-Driven Design
+
+* Every major component has an interface
+
+  * Enables dependency inversion
+  * Easier testing with mocks
+  * Multiple implementations possible
+  * Improves documentation
+
+### 3. Generic Repository Pattern
+
+* `IRepository<T>` provides common CRUD operations
+
+  * Reduces duplication
+  * Ensures consistency
+  * Easy to add new entities
+  * Predictable API
+
+### 4. Security Implementation
+
+* **Password Hashing:** Using `bcryptjs`
+* **JWT Authentication:** Stateless authentication
+* **Guards:** NestJS route protection
+* **User Ownership:** Notes tied to specific users
+
+### 5. Validation and Error Handling
+
+* DTOs with `class-validator`
+* Proper HTTP status codes
+* Consistent exception handling
+
+---
+
+## Testing Strategy
+
+### Unit Testing Example
+
+```ts
+describe('UserService', () => {
+  let service: UserService;
+  let mockRepository: jest.Mocked<UserRepository>;
+
+  beforeEach(() => {
+    mockRepository = {
+      findByEmail: jest.fn(),
+      create: jest.fn(),
+      // ... other methods
+    } as any;
+
+    service = new UserService(mockRepository);
+  });
+
+  it('should create a user', async () => {
+    const userData = { email: 'test@example.com', password: 'password' };
+    mockRepository.findByEmail.mockResolvedValue(null);
+    mockRepository.create.mockResolvedValue(userData as User);
+
+    const result = await service.create(userData);
+    expect(result).toEqual(userData);
+  });
+});
 ```
 
-## Run tests
+### Integration Testing
 
-```bash
-# unit tests
-$ npm run test
+* Modular structure allows isolated and combined module tests
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## Scalability Considerations
 
-## Deployment
+* **Horizontal Scaling:** JWT = stateless = easy scaling
+* **Database Scaling:** Repository pattern supports switching databases
+* **Feature Scaling:** Modular design
+* **Performance Scaling:** Add caching, connection pooling, etc.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Production Considerations
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+* **Environment Variables:** Proper `.env` configuration
+* **Migrations:** `synchronize: false` with proper migrations
+* **Logging:** Add logging (e.g., `winston`, `pino`)
+* **Rate Limiting:** Middleware for throttling
+* **CORS:** Configure appropriately
+* **Security Headers:** Use `helmet` or similar
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## Extending the Application
 
-Check out a few resources that may come in handy when working with NestJS:
+### Adding a New Entity (e.g., Categories)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+* Create `Category` entity
+* Create `ICategoryRepository` interface
+* Implement `CategoryRepository`
+* Add `CategoryService` and `CategoryController`
+* Register in `CategoryModule`
 
-## Support
+### Adding New Authentication Methods
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+* Create new strategy (e.g., `GoogleStrategy`)
+* Extend `IAuthService` if needed
+* Implement in `AuthService`
+* Add endpoints in `AuthController`
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Why This Architecture Matters
 
-## License
+* **Maintainability:** Easy to trace and fix issues
+* **Testability:** Straightforward unit testing
+* **Flexibility:** Swap implementations without changes
+* **Scalability:** Grow features without regressions
+* **Team Collaboration:** Clear modular structure
+* **Code Quality:** Interfaces enforce structure and consistency
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
