@@ -64,6 +64,6 @@ export class UserRepository implements IUserRepository {
 
   async delete(id: string): Promise<boolean> {
     const result = await this.userRepository.delete(id);
-    return typeof result.affected === 'number' && result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 }
