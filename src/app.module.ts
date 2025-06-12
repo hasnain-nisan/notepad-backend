@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { NotesModule } from './notes/notes.module';
+import { User } from './users/entities/user.entity';
+import { Note } from './notes/entities/note.entity';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { NotesModule } from './notes/notes.module';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'notepad.db',
-      entities: [],
+      entities: [User, Note],
       synchronize: true, // Set to false in production
       logging: true,
     }),
