@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Note } from '../entities/note.entity';
 import { INoteRepository } from '../interfaces/note-repository.interface';
+import { PaginatedNotes } from '../interfaces/paginated-notes.interface';
 
 @Injectable()
 export class NoteRepository implements INoteRepository {
@@ -53,5 +54,34 @@ export class NoteRepository implements INoteRepository {
   async delete(id: string): Promise<boolean> {
     const result = await this.noteRepository.delete(id);
     return (result.affected ?? 0) > 0;
+  }
+
+  async findByUserIdPaginated(
+    userId: string,
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<PaginatedNotes> {
+    // Set up the filtering conditions
+    const where: any = { userId };
+    if (search) {
+      // Use the Like operator for partial matching on title.
+      where.title = Like(`%${search}%`);
+    }
+
+    // Find both notes and total count supporting pagination.
+    const [items, total] = await this.noteRepository.findAndCount({
+      where,
+      order: { updatedAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      items,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }

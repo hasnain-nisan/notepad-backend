@@ -3,13 +3,24 @@ import { NoteRepository } from '../repositories/note.repository';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { UpdateNoteDto } from '../dto/update-note.dto';
 import { Note } from '../entities/note.entity';
+import { GetAllNotesQueryDto } from '../dto/get-all-notes.dto';
+import { PaginatedNotes } from '../interfaces/paginated-notes.interface';
 
 @Injectable()
 export class NoteService {
   constructor(private readonly noteRepository: NoteRepository) {}
 
-  async findAllByUser(userId: string): Promise<Note[]> {
-    return this.noteRepository.findByUserId(userId);
+  async findAllByUser(
+    userId: string,
+    query: GetAllNotesQueryDto,
+  ): Promise<PaginatedNotes> {
+    const { page, limit, search } = query;
+    return await this.noteRepository.findByUserIdPaginated(
+      userId,
+      page,
+      limit,
+      search,
+    );
   }
 
   async findOne(id: string, userId: string): Promise<Note> {
