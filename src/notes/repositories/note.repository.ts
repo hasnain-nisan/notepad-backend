@@ -63,7 +63,7 @@ export class NoteRepository implements INoteRepository {
     search?: string,
   ): Promise<PaginatedNotes> {
     // Set up the filtering conditions
-    const where: any = { userId };
+    const where: Record<string, any> = { userId };
     if (search) {
       // Use the Like operator for partial matching on title.
       where.title = Like(`%${search}%`);
