@@ -13,7 +13,11 @@ import { TransformResponseInterceptor } from './common/interceptors/transform-re
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   const reflector = app.get(Reflector);
 
