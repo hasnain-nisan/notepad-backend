@@ -17,6 +17,9 @@ async function bootstrap() {
 
   const reflector = app.get(Reflector);
 
+  // Set global prefix
+  app.setGlobalPrefix('api/v1');
+
   // exclude sensitive data from responses
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(reflector),
@@ -65,6 +68,6 @@ async function bootstrap() {
     next();
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 void bootstrap();
