@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -47,15 +44,9 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async register(
-    registerDto: RegisterDto,
-  ): Promise<{ access_token: string; user: User }> {
+  async register(registerDto: RegisterDto): Promise<{ user: User }> {
     const user = await this.userService.create(registerDto);
-    const payload = { email: user.email, sub: user.id };
 
-    return {
-      access_token: this.jwtService.sign(payload),
-      user,
-    };
+    return { user };
   }
 }
