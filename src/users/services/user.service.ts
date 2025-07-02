@@ -8,9 +8,10 @@ import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
+import { IUserService } from '../interfaces/user-service.interface';
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async findAll(): Promise<User[]> {
@@ -65,7 +66,7 @@ export class UserService {
     return updatedUser;
   }
 
-  async remove(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const deleted = await this.userRepository.delete(id);
     if (!deleted) {
       throw new NotFoundException('User not found');

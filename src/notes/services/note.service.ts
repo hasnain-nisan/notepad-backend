@@ -5,9 +5,10 @@ import { UpdateNoteDto } from '../dto/update-note.dto';
 import { Note } from '../entities/note.entity';
 import { GetAllNotesQueryDto } from '../dto/get-all-notes.dto';
 import { PaginatedNotes } from '../interfaces/paginated-notes.interface';
+import { INoteService } from '../interfaces/note-service.interface';
 
 @Injectable()
-export class NoteService {
+export class NoteService implements INoteService {
   constructor(private readonly noteRepository: NoteRepository) {}
 
   async findAllByUser(
